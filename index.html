@@ -7,9 +7,11 @@
 
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#f9a825">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Saku Medika">
+<link rel="apple-touch-icon" href="./logo.svg">
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&display=swap');
@@ -82,8 +84,8 @@ body{font-family:'Caveat',cursive;background:#F4F3EF}
 }
 .login-error {
     color: #c62828;
-    font-size: 15px;
-    margin-top: 12px;
+    font-size: 14px;
+    margin-top: 10px;
     display: none;
     font-weight: 700;
 }
@@ -534,74 +536,35 @@ body{font-family:'Caveat',cursive;background:#F4F3EF}
 </div>
 
 <script>
-// =========================================================================
-// 🔒 PROGRAM AKUN MULTI-USER DEVELOPER & MAHASISWA (Akses Kontrol Terpusat)
-// =========================================================================
-const DAFTAR_USER = {
-    "admin": "perawathebat2026",
-    "ners_budi": "budi123",
-    "ners_siti": "siti456",
-    "mahasiswa1": "praktek2026",
-    "mahasiswa2": "praktek2026",
-    "mahasiswa3": "praktek2026",
-    "mahasiswa4": "praktek2026",
-    "mahasiswa5": "praktek2026",
-    "mahasiswa6": "praktek2026",
-    "mahasiswa7": "praktek2026",
-    "mahasiswa8": "praktek2026",
-    "mahasiswa9": "praktek2026",
-    "mahasiswa10": "praktek2026",
-    "dosen_pembimbing": "edukasi2026",
-    "sobateduka": "suksespraktek"
-    // Hubungkan baris baru di sini untuk menambah user tak terbatas
-};
+// REGISTER SERVICE WORKER (Wajib PWA)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('Service Worker terdaftar!', reg))
+      .catch(err => console.log('Service Worker gagal:', err));
+  });
+}
+
+var DEV_USERNAME = "admin";
+var DEV_PASSWORD = "perawathebat2026";
 
 function handleLogin() {
-    var inputUser = document.getElementById('usernameInput').value.trim();
-    var inputPass = document.getElementById('passwordInput').value;
-    var errorEl = document.getElementById('loginError');
-
-    if (inputUser === "" || inputPass === "") {
-        errorEl.innerText = "Username dan Password tidak boleh kosong!";
-        errorEl.style.display = 'block';
-        return;
-    }
-
-    // Menguji keberadaan username dalam database Dictionary/Object
-    if (DAFTAR_USER.hasOwnProperty(inputUser)) {
-        if (DAFTAR_USER[inputUser] === inputPass) {
-            // Sukses Login
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('noteWrapper').style.display = 'block';
-            errorEl.style.display = 'none';
-        } else {
-            errorEl.innerText = "Password yang Anda masukkan salah!";
-            errorEl.style.display = 'block';
-        }
+    var user = document.getElementById('usernameInput').value;
+    var pass = document.getElementById('passwordInput').value;
+    
+    if(user === DEV_USERNAME && pass === DEV_PASSWORD) {
+        document.getElementById('loginOverlay').style.display = 'none';
+        document.getElementById('noteWrapper').style.display = 'block';
     } else {
-        errorEl.innerText = "Username tidak terdaftar dalam sistem!";
-        errorEl.style.display = 'block';
+        document.getElementById('loginError').style.display = 'block';
     }
 }
 
-// Fitur Interaksi Keyboard Enter
-window.addEventListener('DOMContentLoaded', () => {
-    var uIn = document.getElementById('usernameInput');
-    var pIn = document.getElementById('passwordInput');
-    var trigger = (e) => { if (e.key === 'Enter') handleLogin(); };
-    if(uIn && pIn) {
-        uIn.addEventListener('keypress', trigger);
-        pIn.addEventListener('keypress', trigger);
-    }
-});
-
-// =========================================================================
-// 🧮 LOGIKA KALKULATOR MEDIS INTERAKTIF (LOGIC SYSTEM)
-// =========================================================================
 function toggleTitMode() {
     var mode = document.getElementById('titMode').value;
     var rowBB = document.getElementById('rowTitBB');
     var lblDosis = document.getElementById('lblTitDosis');
+    
     if (mode === 'bb') {
         rowBB.style.display = 'flex';
         lblDosis.innerText = 'Dosis Order (mcg/kgBB/menit):';
@@ -662,11 +625,14 @@ function hitungTitrasi(){
   var obat = +document.getElementById('titObat').value;
   var vol = +document.getElementById('titVol').value;
   var el = document.getElementById('titResult');
+  
   var konsenMg = (obat / vol);
   var konsenMcg = konsenMg * 1000;
+  
   if (mode === 'bb') {
       var bb = +document.getElementById('titBB').value;
       var mlJam = (dosis * bb * 60) / konsenMcg;
+      
       el.innerHTML = 'Konversi Sediaan = ' + obat + ' mg × 1000 = <b>' + (obat*1000) + ' mcg</b><br>' +
                      'Konsentrasi Obat = ' + (obat*1000) + ' mcg ÷ ' + vol + ' mL = <b>' + konsenMcg.toFixed(1) + ' mcg/mL</b><br>' +
                      'Kecepatan Pompa = (' + dosis + ' mcg × ' + bb + ' kgBB × 60 mnt) ÷ ' + konsenMcg.toFixed(0) + ' mcg/mL<br>' +
@@ -759,15 +725,6 @@ function hitungMAP(){
   var el=document.getElementById('mapResult');
   el.innerHTML='MAP = ('+s+' + 2×'+d+') ÷ 3 = <b>'+map+' mmHg</b><br>'+status;
   el.style.display='block';
-}
-
-// 🛡️ SISTEM REGISTRASI SERVICE WORKER UNTUK AKSES OFFLINE PWA
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('Service Worker Active:', reg.scope))
-      .catch(err => console.error('Service Worker Error:', err));
-  });
 }
 </script>
 </body>
