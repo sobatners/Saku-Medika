@@ -319,7 +319,7 @@ body{font-family:'Caveat',cursive;background:#F4F3EF}
       <label>Jenis infus set:</label>
       <select id="infType">
         <option value="20">Makro (20 tts/mL)</option>
-        <option value="60">Mikro (60 tts/mL)</option>
+        <option value="60">Micro (60 tts/mL)</option>
       </select>
     </div>
     <button class="calc-btn" onclick="hitungInfus()">Hitung Tetesan</button>
@@ -545,14 +545,27 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-var DEV_USERNAME = "admin";
-var DEV_PASSWORD = "perawathebat2026";
+// =======================================================================
+// 🔐 DAFTAR USERNAME DAN PASSWORD RESMI (Sistem Multi-User)
+// Anda bisa mengubah isi di dalam kurung kurawal ini kapan saja.
+// Format: "username": "password"
+// =======================================================================
+var DAFTAR_AKUN = {
+    "admin": "perawathebat2026",
+    "mahasiswa1": "nersmuda123",
+    "mahasiswa2": "praktek2026",
+    "dosen": "pembimbingklinik"
+};
+// =======================================================================
 
+// FUNGSI LOGIN DENGAN VALIDASI DAFTAR AKUN MULTI-USER
 function handleLogin() {
-    var user = document.getElementById('usernameInput').value;
-    var pass = document.getElementById('passwordInput').value;
+    // .trim() digunakan agar spasi tidak sengaja terketik di awal/akhir input
+    var user = document.getElementById('usernameInput').value.trim();
+    var pass = document.getElementById('passwordInput').value.trim();
     
-    if(user === DEV_USERNAME && pass === DEV_PASSWORD) {
+    // Mengecek apakah username ada di daftar akun, dan apakah password-nya cocok
+    if(DAFTAR_AKUN[user] && DAFTAR_AKUN[user] === pass) {
         document.getElementById('loginOverlay').style.display = 'none';
         document.getElementById('noteWrapper').style.display = 'block';
     } else {
